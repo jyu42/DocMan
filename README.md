@@ -12,6 +12,7 @@ This project aims at providing a GUI software to allow user to write their docum
 * Live preview
 * Pre-define structure
 * Maximum of two layer table structure
+* Draggabel & resizeable GUI
 
 ## Run
 ### Use VSCode
