@@ -539,8 +539,3 @@ public static void main(String[] args)
 	window.frame.setVisible(true);
 }
 }
-
-
-
-
-
