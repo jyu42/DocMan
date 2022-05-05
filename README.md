@@ -18,6 +18,7 @@ This project aims at providing a GUI software to allow user to write their docum
 * Open & save source file
 * Convert to HTML
 * Print support (allow user to print the document to paper or PDF file)
+  
 ![app](https://raw.githubusercontent.com/jyu42/DocMan/main/assets/app.png)
 
 ## Run
