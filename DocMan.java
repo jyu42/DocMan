@@ -41,7 +41,8 @@ public class DocMan extends Application{
 
     @Override public void start(Stage stage) {
         // create the scene
-
+        System.setProperty("http.proxyHost","127.0.0.1");
+        System.setProperty("http.proxyPort","8889");
         try {
             // set title for the stage
             stage.setTitle("DocMan");
@@ -50,14 +51,14 @@ public class DocMan extends Application{
             tMenu = new TopMenu(stage);
             // create a splitpane
             SplitPane split_pane = new SplitPane();
-            split_pane.setMinHeight(940);
+            // split_pane.setMinHeight(940);
+            split_pane.prefHeightProperty().bind(stage.heightProperty());
             split_pane.getItems().add(editPanel);
             split_pane.getItems().add(preview);
             // create a scene
             VBox showBox = tMenu.getMenuBox(split_pane);
-  
+            
             scene = new Scene(showBox, Color.web("#666970"));
-            // scene.getStylesheets().add("/home/sheldonvon/Proj/DocSys_JAVA/text-area-background.css");
 
             scene.getStylesheets().add(DocMan.class.getResource("style.css").toExternalForm());
             // set the scene
@@ -119,12 +120,6 @@ public class DocMan extends Application{
                 if (file != null) saveHTMLFile(file);
             });
             m4.setOnAction(e -> {
-                // FileChooser fileChooser = new FileChooser();
-                // fileChooser.setTitle("Save HTML File");
-                // fileChooser.getExtensionFilters().addAll(new ExtensionFilter("HTML File", "*.html"));
-                // File file = fileChooser.showSaveDialog(stage);
-                // if (file != null) saveHTMLFile(file);
-
                 PrinterJob job = PrinterJob.createPrinterJob();
                 if (job != null && job.showPrintDialog(null)) {
                     preview.webEngine.print(job);
@@ -211,8 +206,8 @@ public class DocMan extends Application{
             "StructEnd\n"+
             "\n"+
             "/Section{Overview}\n"+
-            "<img src=\"assets/themeImg.jpeg\" alt=\"Theme Image\" width=\"500\" >\n"+
-            "This is a very useful document manage system with live preview.\n"+
+            "<img src=\"https://raw.githubusercontent.com/jyu42/DocMan/main/assets/themeImg.jpeg\" alt=\"Theme Image\" width=\"200\" >\n"+
+            "This is a very useful document manage system with <span style=\"font-style: italic;color:#AF7AC5\">live preview</span>.\n"+
             "/SectionEnd\n"+
             "\n"+
             "/Section{Installation}\n"+
