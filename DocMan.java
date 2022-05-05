@@ -16,10 +16,19 @@ import javafx.geometry.VPos;
 import javafx.scene.layout.Priority;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
-
+import javafx.scene.layout.VBox;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-
+import javafx.stage.FileChooser;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.BufferedOutputStream;
+import javafx.print.PrinterJob;
+import javafx.stage.FileChooser.ExtensionFilter;
 import java.util.*;
 
 public class DocMan extends Application{
@@ -28,6 +37,7 @@ public class DocMan extends Application{
     private Scene scene;
     Preview preview = new Preview();
     EditPanel editPanel = new EditPanel();
+    TopMenu tMenu;
 
     @Override public void start(Stage stage) {
         // create the scene
@@ -35,16 +45,18 @@ public class DocMan extends Application{
         try {
             // set title for the stage
             stage.setTitle("DocMan");
-  
+            stage.setWidth(1500);
+            stage.setHeight(1000);
+            tMenu = new TopMenu(stage);
             // create a splitpane
             SplitPane split_pane = new SplitPane();
-            
+            split_pane.setMinHeight(940);
             split_pane.getItems().add(editPanel);
             split_pane.getItems().add(preview);
             // create a scene
-            // Scene scene = new Scene(split_pane, 500, 300);
+            VBox showBox = tMenu.getMenuBox(split_pane);
   
-            scene = new Scene(split_pane, 1500, 1000, Color.web("#666970"));
+            scene = new Scene(showBox, Color.web("#666970"));
             // scene.getStylesheets().add("/home/sheldonvon/Proj/DocSys_JAVA/text-area-background.css");
 
             scene.getStylesheets().add(DocMan.class.getResource("style.css").toExternalForm());
@@ -64,6 +76,127 @@ public class DocMan extends Application{
         launch(args);
     }
 
+    /**
+     * TopMenu
+     */
+    public class TopMenu {
+        // create a menu
+        Menu fileM = new Menu("File");
+        Menu convertM = new Menu("Compile");
+        // create a menubar
+        MenuBar mb = new MenuBar();
+        // create menuitems
+        MenuItem m1 = new MenuItem("Open");
+        MenuItem m2 = new MenuItem("Save");
+        MenuItem m3 = new MenuItem("to HTML");
+        MenuItem m4 = new MenuItem("Print");
+
+        public TopMenu(Stage stage) {
+
+            // add menu items to menu
+            m1.setOnAction(e -> {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Open DocMan File");
+                fileChooser.getExtensionFilters().addAll(new ExtensionFilter("DocMan File", "*.dm"));
+                File file = fileChooser.showOpenDialog(stage);
+                if (file != null) loadFile(file);
+            });
+            m2.setOnAction(e -> {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Save DocMan File");
+                fileChooser.getExtensionFilters().addAll(new ExtensionFilter("DocMan File", "*.dm"));
+                File file = fileChooser.showSaveDialog(stage);
+                if (file != null) saveFile(file);
+            });
+            fileM.getItems().add(m1);
+            fileM.getItems().add(m2);
+
+            m3.setOnAction(e -> {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Save HTML File");
+                fileChooser.getExtensionFilters().addAll(new ExtensionFilter("HTML File", "*.html"));
+                File file = fileChooser.showSaveDialog(stage);
+                if (file != null) saveHTMLFile(file);
+            });
+            m4.setOnAction(e -> {
+                // FileChooser fileChooser = new FileChooser();
+                // fileChooser.setTitle("Save HTML File");
+                // fileChooser.getExtensionFilters().addAll(new ExtensionFilter("HTML File", "*.html"));
+                // File file = fileChooser.showSaveDialog(stage);
+                // if (file != null) saveHTMLFile(file);
+
+                PrinterJob job = PrinterJob.createPrinterJob();
+                if (job != null && job.showPrintDialog(null)) {
+                    preview.webEngine.print(job);
+                    job.endJob();
+                }
+            });
+            convertM.getItems().add(m3);
+            convertM.getItems().add(m4);
+            
+            mb.getMenus().add(fileM);
+            mb.getMenus().add(convertM);
+        }
+
+        public void loadFile(File file) {
+            try {
+                FileInputStream fis = new FileInputStream(file);
+                byte[] data = new byte[(int) file.length()];
+                fis.read(data);
+                fis.close();
+                String str = new String(data, "UTF-8");
+                editPanel.setText(str);
+                preview.content.setRawContent(str);
+                preview.refresh();
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+
+        public void saveFile(File file) {
+            if(!file.getName().endsWith(".dm")){
+                file = new File(file.getName()+".dm");
+            }
+            try(
+                FileOutputStream fos = new FileOutputStream(file);
+                BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+                //convert string to byte array
+                byte[] bytes = editPanel.getText().getBytes();
+                //write byte array to file
+                bos.write(bytes);
+                bos.close();
+                fos.close();
+                System.out.print("Data written to file successfully.");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        public void saveHTMLFile(File file) {
+            if(!file.getName().endsWith(".html")){
+                file = new File(file.getName()+".html");
+            }
+            try(
+                FileOutputStream fos = new FileOutputStream(file);
+                BufferedOutputStream bos = new BufferedOutputStream(fos)) {
+                //convert string to byte array
+                byte[] bytes = preview.content.getContent().getBytes();
+                //write byte array to file
+                bos.write(bytes);
+                bos.close();
+                fos.close();
+                System.out.print("Data written to file successfully.");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        public VBox getMenuBox(javafx.scene.Node under) {
+            return new VBox(mb, under);
+        }
+    }
+
 
     public class EditPanel extends TextArea{
     
@@ -78,15 +211,16 @@ public class DocMan extends Application{
             "StructEnd\n"+
             "\n"+
             "/Section{Overview}\n"+
+            "<img src=\"assets/themeImg.jpeg\" alt=\"Theme Image\" width=\"500\" >\n"+
             "This is a very useful document manage system with live preview.\n"+
             "/SectionEnd\n"+
             "\n"+
             "/Section{Installation}\n"+
-            "The process of installation is easy.\n"+
+            "The process of installation is <span style=\"font-weight: bold;color:blue\">easy</span>.\n"+
             "/SectionEnd\n"+
             "\n"+
             "/Section{Build}\n"+
-            "It only relies on one external java library.\n"+
+            "It only relies on <span style=\"font-weight: bold;color:red\">one</span> external java library.\n"+
             "/SectionEnd\n"+
             "\n"+
             "/Section{Usage}\n"+
@@ -130,12 +264,13 @@ public class DocMan extends Application{
             // webEngine.load("http://www.oracle.com/products/index.html");
             //add the web view to the scene
             getChildren().add(browser);
-    
+
         }
 
         public void setContent(String content) {
             webEngine.loadContent(content);
         }
+        
 
         public void refresh() {
             this.setContent(content.getContent());

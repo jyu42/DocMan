@@ -6,7 +6,8 @@
         {
             "label": "run code",
             "type": "shell",
-            "command": "javac DocMan.java --module-path /usr/share/openjfx/lib --add-modules javafx.graphics,javafx.web,javafx.fxml && java --module-path /usr/share/openjfx/lib --add-modules javafx.graphics,javafx.web DocMan",
+            // "command": "javac DocMan.java --module-path /usr/share/openjfx/lib --add-modules javafx.graphics,javafx.web,javafx.fxml && java --module-path /usr/share/openjfx/lib --add-modules javafx.graphics,javafx.web DocMan",
+            "command": "javac DocMan.java --module-path javafx --add-modules javafx.graphics,javafx.web && java --module-path javafx --add-modules javafx.graphics,javafx.web DocMan",
             "problemMatcher": [],
             "group": {
                 "kind": "build",
