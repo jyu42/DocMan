@@ -1,7 +1,0 @@
-{
-    "java.project.referencedLibraries": [
-        // "lib/**/*.jar",
-        // "/usr/share/java/javafx-web.jar",
-        "/usr/share/openjfx/lib/*.jar"
-    ]
-}

@@ -30,18 +30,19 @@ Navigate to the root of the repo and enter *code .* to open directory with VSCod
 Navigate to the root of the repo and type:
 ```
 # Compile
-javac DocMan.java \
---module-path javafx \
---add-modules javafx.graphics,javafx.web
+mvn compile
 
 # Run
-java --module-path javafx \
---add-modules javafx.graphics,javafx.web DocMan
+mvn exec:java  -Dexec.mainClass="DocMan"
 ```
 Alternatively, you can directly run the following command:
 ```
 # One line command
-javac DocMan.java --module-path javafx --add-modules javafx.graphics,javafx.web && java --module-path javafx --add-modules javafx.graphics,javafx.web DocMan
+mvn compile exec:java  -Dexec.mainClass="DocMan"
+```
+or
+```
+./run.sh 
 ```
 
 ## Usage

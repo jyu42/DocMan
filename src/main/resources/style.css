@@ -1,0 +1,7 @@
+.text-area {
+    -fx-text-fill: rgb(201, 203, 201);
+}
+
+.text-area .content {
+    -fx-background-color: rgb(40, 37, 37);
+}
